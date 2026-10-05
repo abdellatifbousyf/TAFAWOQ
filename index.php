@@ -3,19 +3,23 @@
 <!-- القسم الرئيسي -->
 <section class="hero">
     <div class="hero-bg"></div>
+    <div class="hero-particles"></div>
     <div class="container hero-content">
+        <div class="hero-badge">🇲🇦 المنصة الأولى في المغرب</div>
         <h1 class="hero-title">
             مرحباً بك في <span class="highlight">تفوّق</span>
         </h1>
         <p class="hero-subtitle">
             المنصة التعليمية المغربية الشاملة - امتحانات، دروس، تكوينات و فرص الشغل
         </p>
+        
         <div class="hero-search">
             <form action="/Tafawoq/pages/recherche.php" method="GET">
                 <input type="text" name="q" placeholder="ابحث عن امتحان، درس، أو تكوين..." class="search-input">
                 <button type="submit" class="btn btn-primary">🔍 بحث</button>
             </form>
         </div>
+
         <div class="hero-stats">
             <div class="stat">
                 <span class="stat-number" data-count="5000">0</span>+
@@ -41,7 +45,7 @@
 
         <div class="categories-grid">
             <a href="/Tafawoq/pages/bac.php" class="category-card">
-                <div class="category-icon">🎓</div>
+                <div class="category-icon"></div>
                 <h3>البكالوريا</h3>
                 <p>امتحانات وطنية وجهوية مع التصحيح لجميع الشعب</p>
                 <span class="card-arrow">←</span>
@@ -74,7 +78,10 @@
 <!-- آخر الامتحانات -->
 <section class="section recent-section">
     <div class="container">
-        <h2 class="section-title">آخر الامتحانات المضافة</h2>
+        <div class="section-header">
+            <h2 class="section-title">آخر الامتحانات المضافة</h2>
+            <a href="/Tafawoq/pages/recherche.php" class="btn btn-outline btn-sm">عرض الكل ←</a>
+        </div>
 
         <div class="exams-grid">
             <?php
@@ -131,6 +138,24 @@
                 <h4>متوافق مع الهاتف</h4>
                 <p>تصفح و حمّل من أي جهاز بسهولة</p>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- قسم CTA -->
+<section class="section cta-section">
+    <div class="container">
+        <div class="cta-box">
+            <h2>🚀 ابدأ رحلة التفوق الآن</h2>
+            <p>سجّل حسابك مجاناً واحصل على إمكانية تحميل الامتحانات وحفظها في حسابك</p>
+            <?php if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])): ?>
+                <div class="cta-buttons">
+                    <a href="/Tafawoq/register.php" class="btn btn-primary btn-lg">إنشاء حساب مجاني</a>
+                    <a href="/Tafawoq/login.php" class="btn btn-outline btn-lg">تسجيل الدخول</a>
+                </div>
+            <?php else: ?>
+                <a href="/Tafawoq/user/dashboard.php" class="btn btn-primary btn-lg">الذهاب إلى حسابي</a>
+            <?php endif; ?>
         </div>
     </div>
 </section>

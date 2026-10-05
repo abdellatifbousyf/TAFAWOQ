@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_exam'])) {
     $category_id = (int)$_POST['category_id'];
     $year = (int)$_POST['year'];
     $type = $_POST['type'];
+    $description = trim($_POST['description'] ?? '');
     $file_path = '';
 
     if (!empty($_FILES['file']['name'])) {
@@ -47,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_exam'])) {
         }
     }
 
-    if (empty($message)) {
-        $stmt = $pdo->prepare("INSERT INTO exams (title, category_id, year, type, file_path) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $category_id, $year, $type, $file_path]);
+    if (empty($message) || $msgType !== 'danger') {
+        $stmt = $pdo->prepare("INSERT INTO exams (title, category_id, year, type, file_path, description) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $category_id, $year, $type, $file_path, $description]);
         $message = 'تم إضافة الامتحان بنجاح!';
     }
 }
@@ -70,19 +71,19 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
 
 <div class="admin-layout">
     <aside class="admin-sidebar">
-        <h3>🏆 تفوّق</h3>
+        <h3> تفوّق</h3>
         <ul>
             <li><a href="dashboard.php">📊 لوحة التحكم</a></li>
             <li><a href="exams.php" class="active">📝 الامتحانات</a></li>
             <li><a href="categories.php">📂 الأقسام</a></li>
-            <li><a href="users.php">👥 المستخدمين</a></li>
-            <li><a href="/Tafawoq/index.php">🌐 عرض الموقع</a></li>
+            <li><a href="users.php"> المستخدمين</a></li>
+            <li><a href="/Tafawoq/index.php"> عرض الموقع</a></li>
             <li><a href="login.php?logout=1" style="color:#ff6b6b;">🚪 خروج</a></li>
         </ul>
     </aside>
 
     <main class="admin-content">
-        <h2>📝 إدارة الامتحانات</h2>
+        <h2> إدارة الامتحانات</h2>
 
         <?php if ($message): ?>
             <div class="alert alert-<?= $msgType ?>"><?= $message ?></div>
@@ -90,11 +91,15 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
 
         <!-- نموذج الإضافة -->
         <div class="admin-form" style="margin-bottom:30px;">
-            <h3 style="margin-bottom:15px;">إضافة امتحان جديد</h3>
+            <h3 style="margin-bottom:15px;">➕ إضافة امتحان جديد</h3>
             <form method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>العنوان *</label>
                     <input type="text" name="title" required placeholder="مثال: الامتحان الوطني 2025 - رياضيات">
+                </div>
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea name="description" rows="2" placeholder="وصف مختصر للامتحان..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>القسم *</label>
@@ -128,6 +133,7 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
         </div>
 
         <!-- الجدول -->
+        <h3 style="margin-bottom:15px;">📋 جميع الامتحانات (<?= count($exams) ?>)</h3>
         <table class="admin-table">
             <thead>
                 <tr>
@@ -136,6 +142,7 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                     <th>القسم</th>
                     <th>السنة</th>
                     <th>النوع</th>
+                    <th>التحميلات</th>
                     <th>الملف</th>
                     <th>إجراءات</th>
                 </tr>
@@ -148,9 +155,10 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                         <td><?= htmlspecialchars($exam['category_name'] ?? '-') ?></td>
                         <td><?= $exam['year'] ?></td>
                         <td><?= $exam['type'] == 'exam' ? 'امتحان' : ($exam['type'] == 'correction' ? 'تصحيح' : 'درس') ?></td>
+                        <td><?= $exam['downloads'] ?></td>
                         <td><?= $exam['file_path'] ? '✅' : '❌' ?></td>
                         <td>
-                            <a href="?delete=<?= $exam['id'] ?>" class="btn btn-sm btn-danger" data-confirm="هل تريد الحذف؟">🗑️</a>
+                            <a href="?delete=<?= $exam['id'] ?>" class="btn btn-sm btn-danger" data-confirm="هل تريد الحذف؟">️</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

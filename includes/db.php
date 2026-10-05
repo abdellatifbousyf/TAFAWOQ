@@ -1,6 +1,6 @@
 <?php
 // includes/db.php
-$host = 'localhost';
+$host = '127.0.0.1';
 $dbname = 'tafawoq';
 $username = 'root';
 $password = '';
@@ -10,10 +10,10 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("خطأ في الاتصال بقاعدة البيانات: " . $e->getMessage());
+    die("خطأ في الاتصال: " . $e->getMessage());
 }
 
-// إنشاء الجداول تلقائياً
+// إنشاء جميع الجداول
 $sql = "
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,15 +41,25 @@ CREATE TABLE IF NOT EXISTS exams (
     type ENUM('exam','correction','lesson') DEFAULT 'exam',
     file_path VARCHAR(255),
     downloads INT DEFAULT 0,
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_downloads (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    exam_id INT,
+    downloaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE CASCADE
 );
 
 INSERT IGNORE INTO categories (id, name, slug, icon, description) VALUES
 (1, 'البكالوريا', 'bac', '🎓', 'امتحانات و دروس البكالوريا'),
 (2, 'الإعدادي', 'college', '📚', 'امتحانات و دروس الإعدادي'),
 (3, 'التكوين المهني', 'formation', '🔧', 'تكوينات مهنية و شهادات'),
-(4, 'التوظيف', 'emploi', '💼', 'عروض الشغل و المباريات');
+(4, 'التوظيف', 'emploi', '', 'عروض الشغل و المباريات');
 ";
 
 $pdo->exec($sql);
