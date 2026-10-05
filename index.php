@@ -1,9 +1,7 @@
 <?php require_once 'includes/header.php'; ?>
 
-<!-- القسم الرئيسي -->
 <section class="hero">
     <div class="hero-bg"></div>
-    <div class="hero-particles"></div>
     <div class="container hero-content">
         <div class="hero-badge">🇲🇦 المنصة الأولى في المغرب</div>
         <h1 class="hero-title">
@@ -14,7 +12,7 @@
         </p>
         
         <div class="hero-search">
-            <form action="/Tafawoq/pages/recherche.php" method="GET">
+            <form action="pages/recherche.php" method="GET">
                 <input type="text" name="q" placeholder="ابحث عن امتحان، درس، أو تكوين..." class="search-input">
                 <button type="submit" class="btn btn-primary">🔍 بحث</button>
             </form>
@@ -37,35 +35,34 @@
     </div>
 </section>
 
-<!-- الأقسام -->
 <section class="section categories-section">
     <div class="container">
         <h2 class="section-title">استكشف الأقسام</h2>
         <p class="section-subtitle">اختر القسم المناسب لمستواك الدراسي</p>
 
         <div class="categories-grid">
-            <a href="/Tafawoq/pages/bac.php" class="category-card">
+            <a href="pages/bac.php" class="category-card">
                 <div class="category-icon"></div>
                 <h3>البكالوريا</h3>
                 <p>امتحانات وطنية وجهوية مع التصحيح لجميع الشعب</p>
                 <span class="card-arrow">←</span>
             </a>
 
-            <a href="/Tafawoq/pages/college.php" class="category-card">
+            <a href="pages/college.php" class="category-card">
                 <div class="category-icon">📚</div>
                 <h3>الإعدادي</h3>
                 <p>دروس و امتحانات من الأولى إلى الثالثة إعدادي</p>
                 <span class="card-arrow">←</span>
             </a>
 
-            <a href="/Tafawoq/pages/formation.php" class="category-card">
+            <a href="pages/formation.php" class="category-card">
                 <div class="category-icon">🔧</div>
                 <h3>التكوين المهني</h3>
                 <p>تكوينات OFPPT و شهادات مهنية معترف بها</p>
                 <span class="card-arrow">←</span>
             </a>
 
-            <a href="/Tafawoq/pages/emploi.php" class="category-card">
+            <a href="pages/emploi.php" class="category-card">
                 <div class="category-icon">💼</div>
                 <h3>التوظيف</h3>
                 <p>مباريات التوظيف و عروض الشغل في القطاع العام و الخاص</p>
@@ -75,12 +72,11 @@
     </div>
 </section>
 
-<!-- آخر الامتحانات -->
 <section class="section recent-section">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title">آخر الامتحانات المضافة</h2>
-            <a href="/Tafawoq/pages/recherche.php" class="btn btn-outline btn-sm">عرض الكل ←</a>
+            <a href="pages/recherche.php" class="btn btn-outline btn-sm">عرض الكل ←</a>
         </div>
 
         <div class="exams-grid">
@@ -99,10 +95,10 @@
                         <h4><?= htmlspecialchars($exam['title']) ?></h4>
                         <div class="exam-meta">
                             <span>📅 <?= $exam['year'] ?></span>
-                            <span>⬇️ <?= $exam['downloads'] ?> تحميل</span>
+                            <span>️ <?= $exam['downloads'] ?> تحميل</span>
                         </div>
                         <?php if ($exam['file_path']): ?>
-                            <a href="/Tafawoq/uploads/<?= $exam['file_path'] ?>" class="btn btn-sm btn-download" download>
+                            <a href="uploads/<?= $exam['file_path'] ?>" class="btn btn-sm btn-download" download>
                                 📥 تحميل
                             </a>
                         <?php endif; ?>
@@ -113,7 +109,6 @@
     </div>
 </section>
 
-<!-- لماذا تفوق -->
 <section class="section why-section">
     <div class="container">
         <h2 class="section-title">لماذا تفوّق؟</h2>
@@ -142,7 +137,6 @@
     </div>
 </section>
 
-<!-- قسم CTA -->
 <section class="section cta-section">
     <div class="container">
         <div class="cta-box">
@@ -150,11 +144,11 @@
             <p>سجّل حسابك مجاناً واحصل على إمكانية تحميل الامتحانات وحفظها في حسابك</p>
             <?php if (!isset($_SESSION['user']) && !isset($_SESSION['admin'])): ?>
                 <div class="cta-buttons">
-                    <a href="/Tafawoq/register.php" class="btn btn-primary btn-lg">إنشاء حساب مجاني</a>
-                    <a href="/Tafawoq/login.php" class="btn btn-outline btn-lg">تسجيل الدخول</a>
+                    <a href="register.php" class="btn btn-primary btn-lg">إنشاء حساب مجاني</a>
+                    <a href="login.php" class="btn btn-outline btn-lg">تسجيل الدخول</a>
                 </div>
             <?php else: ?>
-                <a href="/Tafawoq/user/dashboard.php" class="btn btn-primary btn-lg">الذهاب إلى حسابي</a>
+                <a href="user/dashboard.php" class="btn btn-primary btn-lg">الذهاب إلى حسابي</a>
             <?php endif; ?>
         </div>
     </div>

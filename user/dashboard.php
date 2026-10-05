@@ -1,99 +1,105 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../includes/db.php';
 
-if (!isset($_SESSION['user'])) {
-    header('Location: ../login.php');
+if (!isset($_SESSION['admin'])) {
+    header('Location: login.php');
     exit;
 }
 
-$user_id = $_SESSION['user'];
+$totalExams = $pdo->query("SELECT COUNT(*) FROM exams")->fetchColumn();
+$totalUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$totalCategories = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
+$totalDownloads = $pdo->query("SELECT SUM(downloads) FROM exams")->fetchColumn() ?: 0;
 
-// تحميلات المستخدم
-$stmt = $pdo->prepare("
-    SELECT e.*, c.name as category_name, ud.downloaded_at
-    FROM user_downloads ud
-    JOIN exams e ON ud.exam_id = e.id
-    LEFT JOIN categories c ON e.category_id = c.id
-    WHERE ud.user_id = ?
-    ORDER BY ud.downloaded_at DESC
-");
-$stmt->execute([$user_id]);
-$downloads = $stmt->fetchAll();
-
-// إحصائيات
-$totalDownloads = count($downloads);
+$recentExams = $pdo->query("SELECT e.*, c.name as category_name FROM exams e LEFT JOIN categories c ON e.category_id = c.id ORDER BY e.created_at DESC LIMIT 5")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حسابي - تفوق</title>
-    <link rel="stylesheet" href="/Tafawoq/style.css">
+    <title>لوحة التحكم - تفوق</title>
+    <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<?php require_once '../includes/header.php'; ?>
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <h3>🏆 تفوّق</h3>
+        <ul>
+            <li><a href="dashboard.php" class="active">📊 لوحة التحكم</a></li>
+            <li><a href="exams.php">📝 الامتحانات</a></li>
+            <li><a href="categories.php">📂 الأقسام</a></li>
+            <li><a href="users.php">👥 المستخدمين</a></li>
+            <li><a href="../index.php">🌐 عرض الموقع</a></li>
+            <li><a href="login.php?logout=1" style="color:#ff6b6b;">🚪 تسجيل الخروج</a></li>
+        </ul>
+    </aside>
 
-<section class="section">
-    <div class="container">
-        <div class="user-dashboard">
-            <div class="user-header">
-                <div class="user-info">
-                    <div class="user-avatar"></div>
-                    <div>
-                        <h2>مرحباً، <?= htmlspecialchars($_SESSION['user_name']) ?> 👋</h2>
-                        <p>إدارة حسابك و تحميلاتك</p>
-                    </div>
-                </div>
+    <main class="admin-content">
+        <h2>مرحباً، <?= htmlspecialchars($_SESSION['admin_name']) ?> 👋</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-value"><?= $totalExams ?></div>
+                <div class="stat-title">امتحان و درس</div>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">⬇️</div>
-                    <div class="stat-value"><?= $totalDownloads ?></div>
-                    <div class="stat-title">تحميل</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📅</div>
-                    <div class="stat-value"><?= date('Y') ?></div>
-                    <div class="stat-title">سنة التسجيل</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👤</div>
-                    <div class="stat-value">مستخدم</div>
-                    <div class="stat-title">نوع الحساب</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-icon">📂</div>
+                <div class="stat-value"><?= $totalCategories ?></div>
+                <div class="stat-title">قسم</div>
             </div>
-
-            <h3 style="margin: 30px 0 20px;"> التحميلات الأخيرة</h3>
-
-            <?php if (empty($downloads)): ?>
-                <div class="empty-state">
-                    <p>📭 لم تقم بأي تحميل بعد.</p>
-                    <a href="/Tafawoq/index.php" class="btn btn-primary" style="margin-top: 15px;">تصفح الامتحانات</a>
-                </div>
-            <?php else: ?>
-                <div class="exams-grid">
-                    <?php foreach ($downloads as $exam): ?>
-                        <div class="exam-card">
-                            <div class="exam-badge"><?= htmlspecialchars($exam['category_name'] ?? 'عام') ?></div>
-                            <h4><?= htmlspecialchars($exam['title']) ?></h4>
-                            <div class="exam-meta">
-                                <span>📅 <?= $exam['year'] ?></span>
-                                <span>⬇️ <?= date('Y/m/d', strtotime($exam['downloaded_at'])) ?></span>
-                            </div>
-                            <?php if ($exam['file_path']): ?>
-                                <a href="/Tafawoq/uploads/<?= $exam['file_path'] ?>" class="btn btn-sm btn-download" download>📥 تحميل</a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value"><?= $totalUsers ?></div>
+                <div class="stat-title">مستخدم</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⬇️</div>
+                <div class="stat-value"><?= number_format($totalDownloads) ?></div>
+                <div class="stat-title">تحميل</div>
+            </div>
         </div>
-    </div>
-</section>
 
-<?php require_once '../includes/footer.php'; ?>
+        <h3 style="margin-bottom:15px;">آخر الامتحانات المضافة</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>العنوان</th>
+                    <th>القسم</th>
+                    <th>السنة</th>
+                    <th>التحميلات</th>
+                    <th>التاريخ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($recentExams as $exam): ?>
+                    <tr>
+                        <td><?= $exam['id'] ?></td>
+                        <td><?= htmlspecialchars($exam['title']) ?></td>
+                        <td><?= htmlspecialchars($exam['category_name'] ?? '-') ?></td>
+                        <td><?= $exam['year'] ?></td>
+                        <td><?= $exam['downloads'] ?></td>
+                        <td><?= date('Y/m/d', strtotime($exam['created_at'])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<?php
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: login.php');
+    exit;
+}
+?>
+</body>
+</html>

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../includes/db.php';
 
 if (!isset($_SESSION['admin'])) {
@@ -64,7 +66,7 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الامتحانات - تفوق</title>
-    <link rel="stylesheet" href="/Tafawoq/style.css">
+    <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -76,20 +78,19 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
             <li><a href="dashboard.php">📊 لوحة التحكم</a></li>
             <li><a href="exams.php" class="active">📝 الامتحانات</a></li>
             <li><a href="categories.php">📂 الأقسام</a></li>
-            <li><a href="users.php"> المستخدمين</a></li>
-            <li><a href="/Tafawoq/index.php"> عرض الموقع</a></li>
+            <li><a href="users.php">👥 المستخدمين</a></li>
+            <li><a href="../index.php">🌐 عرض الموقع</a></li>
             <li><a href="login.php?logout=1" style="color:#ff6b6b;">🚪 خروج</a></li>
         </ul>
     </aside>
 
     <main class="admin-content">
-        <h2> إدارة الامتحانات</h2>
+        <h2>📝 إدارة الامتحانات</h2>
 
         <?php if ($message): ?>
             <div class="alert alert-<?= $msgType ?>"><?= $message ?></div>
         <?php endif; ?>
 
-        <!-- نموذج الإضافة -->
         <div class="admin-form" style="margin-bottom:30px;">
             <h3 style="margin-bottom:15px;">➕ إضافة امتحان جديد</h3>
             <form method="POST" enctype="multipart/form-data">
@@ -132,7 +133,6 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
             </form>
         </div>
 
-        <!-- الجدول -->
         <h3 style="margin-bottom:15px;">📋 جميع الامتحانات (<?= count($exams) ?>)</h3>
         <table class="admin-table">
             <thead>
@@ -158,7 +158,7 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
                         <td><?= $exam['downloads'] ?></td>
                         <td><?= $exam['file_path'] ? '✅' : '❌' ?></td>
                         <td>
-                            <a href="?delete=<?= $exam['id'] ?>" class="btn btn-sm btn-danger" data-confirm="هل تريد الحذف؟">️</a>
+                            <a href="?delete=<?= $exam['id'] ?>" class="btn btn-sm btn-danger" data-confirm="هل تريد الحذف؟">🗑️</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -167,6 +167,6 @@ $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
     </main>
 </div>
 
-<script src="/Tafawoq/script.js"></script>
+<script src="../script.js"></script>
 </body>
 </html>

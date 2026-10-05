@@ -1,32 +1,22 @@
 <?php
 require_once 'includes/db.php';
 
+echo "<!DOCTYPE html><html dir='rtl'><head><meta charset='UTF-8'><title>فحص الأدمن</title></head><body>";
 echo "<h2>فحص حساب الأدمن</h2>";
 
-// شوف جميع المستخدمين
-$stmt = $pdo->query("SELECT id, username, email, role FROM users");
-$users = $stmt->fetchAll();
+// حذف الحساب القديم
+$pdo->exec("DELETE FROM users WHERE email = 'admin@tafawoq.ma'");
 
-if (empty($users)) {
-    echo "<p style='color:red;'>❌ ما كاين حتى مستخدم في قاعدة البيانات!</p>";
-    echo "<p>غادي نخلقو حساب الأدمن دابا...</p>";
-    
-    $password = password_hash('admin123', PASSWORD_DEFAULT);
-    $pdo->exec("INSERT INTO users (username, email, password, role) VALUES ('المدير', 'admin@tafawoq.ma', '$password', 'admin')");
-    echo "<p style='color:green;'>✅ تم إنشاء الحساب!</p>";
-} else {
-    echo "<table border='1' cellpadding='10'>";
-    echo "<tr><th>ID</th><th>الاسم</th><th>الإيميل</th><th>الدور</th></tr>";
-    foreach ($users as $u) {
-        echo "<tr>";
-        echo "<td>{$u['id']}</td>";
-        echo "<td>{$u['username']}</td>";
-        echo "<td>{$u['email']}</td>";
-        echo "<td>{$u['role']}</td>";
-        echo "</tr>";
-    }
-    echo "</table>";
-}
+// إنشاء كلمة مرور مشفرة
+$password = password_hash('admin123', PASSWORD_DEFAULT);
 
-echo "<br><a href='login.php'>الذهاب لتسجيل الدخول</a>";
+// إضافة الحساب
+$stmt = $pdo->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'admin')");
+$stmt->execute(['المدير', 'admin@tafawoq.ma', $password]);
+
+echo "<p style='color:green;font-size:1.2rem;'>✅ تم إنشاء حساب الأدمن بنجاح!</p>";
+echo "<p><strong>الإيميل:</strong> admin@tafawoq.ma</p>";
+echo "<p><strong>كلمة المرور:</strong> admin123</p>";
+echo "<br><a href='login.php' style='padding:10px 20px;background:#1a73e8;color:white;text-decoration:none;border-radius:5px;'>الذهاب لتسجيل الدخول</a>";
+echo "</body></html>";
 ?>
