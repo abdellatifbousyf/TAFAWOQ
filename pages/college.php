@@ -14,6 +14,8 @@ $stmt = $pdo->prepare("SELECT e.*, c.name as category_name FROM exams e JOIN cat
 $stmt->execute($params);
 $exams = $stmt->fetchAll();
 ?>
+<link rel="stylesheet" href="../styles.css
+
 
 <div class="page-header">
     <div class="container">
