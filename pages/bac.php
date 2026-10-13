@@ -18,6 +18,7 @@ $stmt->execute($params);
 $exams = $stmt->fetchAll();
 ?>
 
+<link rel="stylesheet" href="../style.css">
 <div class="page-header">
     <div class="container">
         <h1>🎓 امتحانات البكالوريا</h1>

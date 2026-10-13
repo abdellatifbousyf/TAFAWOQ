@@ -17,17 +17,17 @@ try {
 $sql = "
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    username VARCHAR(20) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(20) NOT NULL,
     role ENUM('admin','user') DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    slug VARCHAR(50) UNIQUE NOT NULL,
     icon VARCHAR(50),
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS categories (
 
 CREATE TABLE IF NOT EXISTS exams (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(55) NOT NULL,
     category_id INT,
     year INT,
     type ENUM('exam','correction','lesson') DEFAULT 'exam',
