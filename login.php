@@ -222,7 +222,7 @@ require_once 'includes/header.php';
                     </div>
                     <div class="form-group">
                         <label>كلمة المرور</label>
-                        <input type="password" name="password" required placeholder="••••••••">
+                        <input type="password" name="password" >
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">دخول</button>
                 </form>
