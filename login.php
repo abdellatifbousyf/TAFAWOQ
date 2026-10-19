@@ -217,12 +217,12 @@ require_once 'includes/header.php';
                 <form method="POST" class="auth-form">
                     <div class="form-group">
                         <label>البريد الإلكتروني</label>
-                        <input type="email" name="email" required placeholder="example@email.com" dir="ltr"
+                        <input type="email" name="email" required dir="ltr"
                                value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label>كلمة المرور</label>
-                        <input type="password" name="password" >
+                        <input type="password" name="password"  required >
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">دخول</button>
                 </form>
