@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once 'includes/config.php';
 require_once 'includes/db.php';
 
 $error = '';
@@ -21,11 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user['role'] === 'admin') {
                 $_SESSION['admin'] = $user['id'];
                 $_SESSION['admin_name'] = $user['username'];
-                header('Location: admin/dashboard.php');
+                header('Location: ' . BASE_URL . '/admin/dashboard.php');
             } else {
                 $_SESSION['user'] = $user['id'];
                 $_SESSION['user_name'] = $user['username'];
-                header('Location: user/dashboard.php');
+                header('Location: ' . BASE_URL . '/user/dashboard.php');
             }
             exit;
         } else {
@@ -222,13 +223,13 @@ require_once 'includes/header.php';
                     </div>
                     <div class="form-group">
                         <label>كلمة المرور</label>
-                        <input type="password" name="password"  required >
+                        <input type="password" name="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">دخول</button>
                 </form>
 
                 <div class="auth-footer">
-                    <p>ليس لديك حساب؟ <a href="register.php">إنشاء حساب جديد</a></p>
+                    <p>ليس لديك حساب؟ <a href="<?= BASE_URL ?>/register.php">إنشاء حساب جديد</a></p>
                 </div>
             </div>
 
