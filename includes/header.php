@@ -6,6 +6,9 @@ if (!isset($pdo)) {
     require_once __DIR__ . '/db.php';
 }
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// f lowl dyal header.php
+$base = '/TAFAWOQ';
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -28,11 +31,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <button class="menu-toggle" id="menuToggle">
             <span></span><span></span><span></span>
         </button>
+                        
+
+
+
 
         <ul class="nav-links" id="navLinks">
-            <li><a href="index.php" class="<?= $current_page == 'index.php' ? 'active' : '' ?>">الرئيسية</a></li>
-            <li><a href="pages/bac.php" class="<?= $current_page == 'bac.php' ? 'active' : '' ?>">البكالوريا</a></li>
-            <li><a href="pages/college.php" class="<?= $current_page == 'college.php' ? 'active' : '' ?>">الإعدادي</a></li>
+            <li><a href="<?= $base ?>/index.php">الرئيسية</a></li>
+            <li><a href="<?= $base ?>/pages/college.php">الإعدادي</a></li>
+            <li><a href="<?= $base ?>/pages/bac.php">البكالوريا</a></li>
             <li><a href="pages/formation.php" class="<?= $current_page == 'formation.php' ? 'active' : '' ?>">التكوين</a></li>
             <li><a href="pages/emploi.php" class="<?= $current_page == 'emploi.php' ? 'active' : '' ?>">التوظيف</a></li>
             <li><a href="pages/recherche.php" class="nav-search-btn">🔍 بحث</a></li>

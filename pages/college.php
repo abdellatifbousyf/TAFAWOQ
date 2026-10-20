@@ -1,5 +1,12 @@
 <?php
 require_once '../includes/header.php';
+// f lowl dyal header.php
+$base = '/TAFAWOQ';
+?>
+<a href="<?= $base ?>/index.php">الرئيسية</a>
+<a href="<?= $base ?>/pages/college.php">الإعدادي</a>
+<a href="<?= $base ?>/pages/bac.php">البكالوريا</a>
+<a href="<?= $base ?>/login.php">تسجيل الدخول</a>
 
 $level = $_GET['level'] ?? '';
 $subject = $_GET['subject'] ?? '';
