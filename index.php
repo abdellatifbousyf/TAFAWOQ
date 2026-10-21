@@ -35,7 +35,7 @@ try {
          FROM exams e
          LEFT JOIN categories c ON e.category_id = c.id
          ORDER BY e.created_at DESC
-         LIMIT 6"
+         LIMIT 15"
     );
 
     $exams = $stmt->fetchAll();
