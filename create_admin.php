@@ -1,18 +1,49 @@
+```php
 <?php
-require_once 'includes/db.php';
+session_start();
 
-// حذف الحساب القديم
-$pdo->exec("DELETE FROM users WHERE email = 'admin@tafawoq.ma'");
+require_once __DIR__ . '/includes/db.php';
 
-// إنشاء كلمة مرور مشفرة
-$password = password_hash('admin123', PASSWORD_DEFAULT);
+$username = 'admin';
+$email = 'admin@tafawoq.ma';
+$password = 'admin123';
 
-// إضافة الحساب
-$stmt = $pdo->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'admin')");
-$stmt->execute(['المدير', 'admin@tafawoq.ma', $password]);
+try {
+    $stmt = $pdo->prepare(
+        "SELECT id FROM users WHERE email = ? LIMIT 1"
+    );
+    $stmt->execute([$email]);
+    $existingUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-echo "✅ تم إنشاء حساب الأدمن بنجاح!<br><br>";
-echo "<strong>الإيميل:</strong> admin@tafawoq.ma<br>";
-echo "<strong>كلمة المرور:</strong> admin123<br><br>";
-echo '<a href="login.php">اضغط هنا لتسجيل الدخول</a>';
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    if ($existingUser) {
+        $stmt = $pdo->prepare(
+            "UPDATE users
+             SET username = ?, password = ?, role = 'admin'
+             WHERE id = ?"
+        );
+        $stmt->execute([
+            $username,
+            $hashedPassword,
+            $existingUser['id']
+        ]);
+    } else {
+        $stmt = $pdo->prepare(
+            "INSERT INTO users (username, email, password, role)
+             VALUES (?, ?, ?, 'admin')"
+        );
+        $stmt->execute([$username, $email, $hashedPassword]);
+    }
+
+    echo "تم إنشاء أو تحديث حساب المدير بنجاح.<br>";
+    echo "الإيميل: " . htmlspecialchars($email) . "<br>";
+    echo "كلمة المرور: " . htmlspecialchars($password) . "<br>";
+    echo '<a href="/TAFAWOQ/login.php">الدخول إلى الموقع</a>';
+
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    echo "وقع خطأ أثناء إنشاء الحساب. تحقق من إعدادات قاعدة البيانات.";
+}
 ?>
+```
