@@ -1,11 +1,13 @@
-```php
 <?php
+// بدء الجلسة لتخزين معلومات المستخدم بعد تسجيل الدخول
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// الاتصال بقاعدة البيانات
 require_once __DIR__ . '/includes/db.php';
 
+// المسار الأساسي للمشروع على خادم XAMPP
 if (!defined('BASE_URL')) {
     define('BASE_URL', '/TAFAWOQ');
 }
@@ -13,6 +15,7 @@ if (!defined('BASE_URL')) {
 $baseUrl = rtrim(BASE_URL, '/');
 $error = '';
 
+// معالجة نموذج تسجيل الدخول
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -21,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'المرجو ملء جميع الحقول.';
     } else {
         try {
+            // البحث عن الحساب بواسطة البريد الإلكتروني
             $stmt = $pdo->prepare(
                 'SELECT id, username, email, password, role
                  FROM users
@@ -30,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (
-                $user &&
-                password_verify($password, $user['password'])
-            ) {
+            // التحقق من كلمة المرور المشفرة
+            if ($user && password_verify($password, $user['password'])) {
+                // تجديد معرف الجلسة بعد نجاح تسجيل الدخول
                 session_regenerate_id(true);
 
-                if ($user['role'] === 'admin') {
+                // توجيه المدير إلى لوحة الإدارة
+                if (($user['role'] ?? '') === 'admin') {
                     $_SESSION['admin'] = $user['id'];
                     $_SESSION['admin_name'] = $user['username'];
 
@@ -44,21 +48,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
 
+                // تخزين معلومات المستخدم العادي
                 $_SESSION['user'] = $user['id'];
                 $_SESSION['user_name'] = $user['username'];
 
+                // توجيه المستخدم إلى لوحة التحكم
                 header('Location: ' . $baseUrl . '/user/dashboard.php');
                 exit;
             }
 
             $error = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
         } catch (PDOException $e) {
+            // تسجيل تفاصيل الخطأ في سجل أخطاء PHP دون عرضها للمستخدم
             error_log('Login error: ' . $e->getMessage());
             $error = 'وقع مشكل أثناء تسجيل الدخول. حاول مرة أخرى.';
         }
     }
 }
 
+// تحميل رأس الموقع بعد معالجة النموذج حتى لا تتعطل التحويلات
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -93,6 +101,7 @@ require_once __DIR__ . '/includes/header.php';
 }
 
 .login-container input {
+    display: block;
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
@@ -112,7 +121,7 @@ require_once __DIR__ . '/includes/header.php';
     margin-top: 22px;
     padding: 13px;
     background: #2459a9;
-    color: white;
+    color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 16px;
@@ -142,10 +151,22 @@ require_once __DIR__ . '/includes/header.php';
     font-weight: bold;
     text-decoration: none;
 }
+
+.login-register a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+    .login-container {
+        margin: 25px 15px;
+        padding: 22px;
+    }
+}
 </style>
 
 <main class="login-container">
     <h2>تسجيل الدخول</h2>
+
     <p class="login-description">
         مرحباً بك في منصة تفوق TAFAWOQ
     </p>
@@ -156,7 +177,11 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="" autocomplete="on">
+    <form
+        method="POST"
+        action="<?= htmlspecialchars($baseUrl . '/login.php', ENT_QUOTES, 'UTF-8') ?>"
+        autocomplete="on"
+    >
         <label for="email">البريد الإلكتروني</label>
         <input
             type="email"
@@ -178,18 +203,15 @@ require_once __DIR__ . '/includes/header.php';
             required
         >
 
-        <button type="submit" class="login-button">
-            تسجيل الدخول
-        </button>
+        <button type="submit" class="login-button">تسجيل الدخول</button>
     </form>
 
     <div class="login-register">
         ليس لديك حساب؟
-        <a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') ?>/pages/register.php">
+        <a href="<?= htmlspecialchars($baseUrl . '/register.php', ENT_QUOTES, 'UTF-8') ?>">
             إنشاء حساب جديد
         </a>
     </div>
 </main>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
-```
