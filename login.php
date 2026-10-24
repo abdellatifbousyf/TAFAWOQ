@@ -6,14 +6,20 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // الاتصال بقاعدة البيانات
 require_once __DIR__ . '/includes/db.php';
-
-// المسار الأساسي للمشروع على خادم XAMPP
-if (!defined('BASE_URL')) {
-    define('BASE_URL', '/TAFAWOQ');
-}
+require_once __DIR__ . '/includes/config.php';
 
 $baseUrl = rtrim(BASE_URL, '/');
 $error = '';
+
+// إذا كان المستخدم مسجلاً مسبقاً نوجهه مباشرة
+if (isset($_SESSION['admin'])) {
+    header('Location: ' . $baseUrl . '/admin/dashboard.php');
+    exit;
+}
+if (isset($_SESSION['user'])) {
+    header('Location: ' . $baseUrl . '/user/dashboard.php');
+    exit;
+}
 
 // معالجة نموذج تسجيل الدخول
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

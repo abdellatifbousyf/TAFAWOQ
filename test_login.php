@@ -1,27 +1,29 @@
 <?php
-require_once 'includes/db.php';
+// للتجربة فقط على localhost. احذف الملف قبل رفع الموقع.
+if (!in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true)) {
+    http_response_code(403);
+    exit('Forbidden');
+}
+require_once __DIR__ . '/includes/db.php';
 
-echo "<h2>اختبار حساب الأدمن</h2>";
+header('Content-Type: text/html; charset=UTF-8');
+echo "<div dir='rtl' style='font-family:sans-serif'><h2>اختبار حساب الأدمن</h2>";
 
-$stmt = $pdo->query("SELECT id, username, email, role, password FROM users WHERE email = 'admin@tafawoq.ma'");
-$user = $stmt->fetch();
+$stmt = $pdo->prepare('SELECT id, username, email, role, password FROM users WHERE email = ?');
+$stmt->execute(['admin@tafawoq.ma']);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($user) {
     echo "✅ الحساب موجود:<br>";
-    echo "ID: " . $user['id'] . "<br>";
-    echo "الاسم: " . $user['username'] . "<br>";
-    echo "الإيميل: " . $user['email'] . "<br>";
-    echo "الدور: " . $user['role'] . "<br>";
-    echo "كلمة المرور (مشفرة): " . substr($user['password'], 0, 20) . "...<br><br>";
-    
-    // اختبار كلمة المرور
-    $test = password_verify('admin123', $user['password']);
-    if ($test) {
-        echo "✅ كلمة المرور صحيحة!";
-    } else {
-        echo "❌ كلمة المرور غلط! جرب الحل 1.";
-    }
+    echo "ID: " . (int) $user['id'] . "<br>";
+    echo "الاسم: " . htmlspecialchars($user['username']) . "<br>";
+    echo "الإيميل: " . htmlspecialchars($user['email']) . "<br>";
+    echo "الدور: " . htmlspecialchars($user['role']) . "<br>";
+    echo "كلمة المرور (مشفرة): " . htmlspecialchars(substr($user['password'], 0, 20)) . "...<br><br>";
+    echo password_verify('admin123', $user['password'])
+        ? "✅ كلمة المرور صحيحة!"
+        : "❌ كلمة المرور غلط! شغّل check_admin.php أو create_admin.php.";
 } else {
-    echo "❌ الحساب غير موجود! جرب create_admin.php";
+    echo "❌ الحساب غير موجود! شغّل create_admin.php";
 }
-?>
+echo "</div>";
